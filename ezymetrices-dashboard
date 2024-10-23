@@ -1,0 +1,303 @@
+import React, { useState } from 'react';
+import { 
+  BarChart, 
+  PieChart, 
+  Activity, 
+  Users, 
+  FileText, 
+  PlusCircle,
+  Download,
+  X,
+  ChevronRight,
+  Menu,
+  Layout
+} from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+// Dummy data for charts
+const performanceData = [
+  { name: 'Jan', value: 400 },
+  { name: 'Feb', value: 300 },
+  { name: 'Mar', value: 600 },
+  { name: 'Apr', value: 800 },
+  { name: 'May', value: 500 },
+  { name: 'Jun', value: 700 },
+];
+
+const leadData = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', status: 'New', date: '2024-03-15' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Contacted', date: '2024-03-14' },
+  { id: 3, name: 'Mike Johnson', email: 'mike@example.com', status: 'Qualified', date: '2024-03-13' },
+  { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', status: 'Proposal', date: '2024-03-12' },
+];
+
+const Dashboard = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [activeSection, setActiveSection] = useState('dashboard');
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const openLeadDetails = (lead) => {
+    setSelectedLead(lead);
+  };
+
+  const closeLeadDetails = () => {
+    setSelectedLead(null);
+  };
+
+  const downloadReport = () => {
+    // Simulated download functionality
+    alert('Downloading report...');
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-white shadow-lg transition-all duration-300`}>
+        <div className="p-4 flex items-center justify-between">
+          <h1 className={`font-bold text-xl ${!isSidebarOpen && 'hidden'}`}>EzyMetrics</h1>
+          <button onClick={toggleSidebar} className="p-2 hover:bg-gray-100 rounded">
+            <Menu size={20} />
+          </button>
+        </div>
+        
+        <nav className="mt-8">
+          <button 
+            onClick={() => setActiveSection('dashboard')}
+            className={`w-full p-4 flex items-center gap-4 hover:bg-gray-100 ${activeSection === 'dashboard' && 'bg-blue-50 text-blue-600'}`}
+          >
+            <Layout size={20} />
+            {isSidebarOpen && <span>Dashboard</span>}
+          </button>
+          
+          <button 
+            onClick={() => setActiveSection('leads')}
+            className={`w-full p-4 flex items-center gap-4 hover:bg-gray-100 ${activeSection === 'leads' && 'bg-blue-50 text-blue-600'}`}
+          >
+            <Users size={20} />
+            {isSidebarOpen && <span>Leads</span>}
+          </button>
+          
+          <button 
+            onClick={() => setActiveSection('analytics')}
+            className={`w-full p-4 flex items-center gap-4 hover:bg-gray-100 ${activeSection === 'analytics' && 'bg-blue-50 text-blue-600'}`}
+          >
+            <Activity size={20} />
+            {isSidebarOpen && <span>Analytics</span>}
+          </button>
+          
+          <button 
+            onClick={() => setActiveSection('reports')}
+            className={`w-full p-4 flex items-center gap-4 hover:bg-gray-100 ${activeSection === 'reports' && 'bg-blue-50 text-blue-600'}`}
+          >
+            <FileText size={20} />
+            {isSidebarOpen && <span>Reports</span>}
+          </button>
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <header className="bg-white p-4 shadow">
+          <h2 className="text-2xl font-semibold">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h2>
+        </header>
+
+        <main className="p-6">
+          {activeSection === 'dashboard' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Performance Widget */}
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={performanceData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#3B82F6" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Quick Stats Widget */}
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Quick Stats</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span>Total Leads</span>
+                    <span className="font-semibold">247</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Conversion Rate</span>
+                    <span className="font-semibold">12.4%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Active Campaigns</span>
+                    <span className="font-semibold">5</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Activity Widget */}
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+                <div className="space-y-4">
+                  {leadData.slice(0, 3).map(lead => (
+                    <div key={lead.id} className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      <span>{lead.name} - {lead.status}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'leads' && (
+            <div className="bg-white rounded-lg shadow">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Lead Management</h3>
+                <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                  <PlusCircle size={20} />
+                  Add Lead
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="p-4 text-left">Name</th>
+                      <th className="p-4 text-left">Email</th>
+                      <th className="p-4 text-left">Status</th>
+                      <th className="p-4 text-left">Date</th>
+                      <th className="p-4 text-left">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leadData.map(lead => (
+                      <tr key={lead.id} className="border-t">
+                        <td className="p-4">{lead.name}</td>
+                        <td className="p-4">{lead.email}</td>
+                        <td className="p-4">{lead.status}</td>
+                        <td className="p-4">{lead.date}</td>
+                        <td className="p-4">
+                          <button 
+                            onClick={() => openLeadDetails(lead)}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            <ChevronRight size={20} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'analytics' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Lead Sources</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={performanceData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#3B82F6" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Conversion Rates</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={performanceData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="value" stroke="#3B82F6" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'reports' && (
+            <div className="bg-white p-6 rounded-lg shadow">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold">Generate Reports</h3>
+                <button 
+                  onClick={downloadReport}
+                  className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  <Download size={20} />
+                  Download Report
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div className="p-4 border rounded">
+                  <h4 className="font-semibold mb-2">Lead Performance Report</h4>
+                  <p className="text-gray-600">Comprehensive analysis of lead generation and conversion metrics</p>
+                </div>
+                <div className="p-4 border rounded">
+                  <h4 className="font-semibold mb-2">Campaign Analytics Report</h4>
+                  <p className="text-gray-600">Detailed breakdown of campaign performance and ROI</p>
+                </div>
+                <div className="p-4 border rounded">
+                  <h4 className="font-semibold mb-2">Sales Pipeline Report</h4>
+                  <p className="text-gray-600">Overview of deals in pipeline and conversion rates</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+
+      {/* Lead Details Modal */}
+      {selectedLead && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Lead Details</h3>
+              <button onClick={closeLeadDetails} className="text-gray-500 hover:text-gray-700">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="font-medium">Name</label>
+                <p>{selectedLead.name}</p>
+              </div>
+              <div>
+                <label className="font-medium">Email</label>
+                <p>{selectedLead.email}</p>
+              </div>
+              <div>
+                <label className="font-medium">Status</label>
+                <p>{selectedLead.status}</p>
+              </div>
+              <div>
+                <label className="font-medium">Date Added</label>
+                <p>{selectedLead.date}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Dashboard;
